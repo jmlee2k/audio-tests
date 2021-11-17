@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Audio test - basic</title>
+</head>
+<body>
+	<button id="play-btn">play sound immediately</button>
+	<button id="play-btn-5s">play sound after 5s delay</button>
+	<div id="output"></div>
+	<script src="utils.js"></script>
+	<script>
+		const ctx = new AudioContext();
+		let buffer;
+
+		log("loading sound");
+		loadSound("sounds/hit.mp3",ctx)
+			.then(buf=>{
+				buffer = buf;
+				log("sound loaded",buf);
+			})
+			.catch(logError);
+		
+		document.getElementById("play-btn").addEventListener("click",()=>{
+			log("playing sound");
+			const src = ctx.createBufferSource();
+			src.connect(ctx.destination);
+			src.buffer = buffer;
+			src.start(0);
+		});
+
+		document.getElementById("play-btn-5s").addEventListener("click",()=>{
+			log("playing sound after 5s");
+			const src = ctx.createBufferSource();
+			src.connect(ctx.destination);
+			src.buffer = buffer;
+			setTimeout(()=>{	
+				log("5s passed, playing sound");
+				src.start(0);
+			},5000);
+		});
+	</script>
+</body>

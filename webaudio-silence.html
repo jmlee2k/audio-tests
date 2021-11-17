@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Audio test - webaudio silence</title>
+</head>
+<body>
+	<button id="play-silence">[webaudio] play generated silence</button>
+	<button id="play-btn">[webaudio] play "hit" immediately</button>
+	<button id="play-btn-5s">[webaudio] play "hit" after 5s delay</button>
+	<div id="output"></div>
+	<script src="utils.js"></script>
+	<script>
+		const ctx = new AudioContext();
+		let buffer;
+
+		document.getElementById("play-silence").addEventListener("click",()=>{
+			const silence = ctx.createBufferSource();
+			silence.buffer = ctx.createBuffer(1,1,22050);
+			silence.connect(ctx.destination);
+			silence.start(0);
+			log("playing generated silence");
+		});
+
+		log("loading sound");
+		loadSound("sounds/hit.mp3",ctx)
+			.then(buf=>{
+				buffer = buf;
+				log("sound loaded",buf);
+			})
+			.catch(logError);
+		
+		document.getElementById("play-btn").addEventListener("click",()=>{
+			log("playing sound");
+			const src = ctx.createBufferSource();
+			src.connect(ctx.destination);
+			src.buffer = buffer;
+			src.start(0);
+		});
+
+		document.getElementById("play-btn-5s").addEventListener("click",()=>{
+			log("playing sound after 5s");
+			const src = ctx.createBufferSource();
+			src.connect(ctx.destination);
+			src.buffer = buffer;
+			setTimeout(()=>{	
+				log("5s passed, playing sound");
+				src.start(0);
+			},5000);
+		});
+	</script>
+</body>
